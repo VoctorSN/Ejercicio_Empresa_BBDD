@@ -19,6 +19,35 @@ public class Conexion {
         return null;
     }
 
+    public static int subirSalarioDepartamento(Connection c, int subida, String nombreDep){
+        try {
+
+            Statement statementDep = c.createStatement();
+            String stringSQLDep =
+                            " SELECT NUMERO" +
+                            " FROM DEPARTAMENTOS" +
+                            " WHERE NOMBRE = '" + nombreDep + "'";
+            ResultSet rs = statementDep.executeQuery(stringSQLDep);
+            rs.next();
+
+            int numeroDep = rs.getInt(1);
+
+            Statement s = c.createStatement();
+            String stringSQLSalario =
+                    " UPDATE EMPLEADOS" +
+                    " SET SALARIO = SALARIO + '" + subida + "'" +
+                    " WHERE DEPARTAMENTO = '" + numeroDep + "'";
+            int rowsUpdated = s.executeUpdate(stringSQLSalario);
+            s.close();
+            return rowsUpdated;
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public static List<List> leerEmpleadosPorLocalidad(Connection c, String localidad){
         try {
             List<List> out = new ArrayList<>();
