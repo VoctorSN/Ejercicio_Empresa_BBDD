@@ -42,15 +42,19 @@ public class Conexion {
                 empleado.add(String.valueOf(rs.getDate(6)));
 
                 String nss = rs.getString(7);
-                String stringSQLSupervisor = "" +
-                        " SELECT NOMBRE " +
-                        " FROM EMPLEADOS " +
-                        " WHERE NSS = '" + nss + "' ";
-                Statement statementNSS = c.createStatement();
-                ResultSet resultSetNSS = statementNSS.executeQuery(stringSQLSupervisor);
+                if (nss != null){
+                    String stringSQLSupervisor = "" +
+                            " SELECT NOMBRE " +
+                            " FROM EMPLEADOS " +
+                            " WHERE NSS = '" + nss + "' ";
+                    Statement statementNSS = c.createStatement();
+                    ResultSet resultSetNSS = statementNSS.executeQuery(stringSQLSupervisor);
 
-                resultSetNSS.next();
-                empleado.add(resultSetNSS.getString(1));
+                    resultSetNSS.next();
+                    empleado.add(resultSetNSS.getString(1));
+                } else{
+                    empleado.add(null);
+                }
 
                 String dep = rs.getString(8);
                 String stringSQLDepartamento = "" +
@@ -63,6 +67,7 @@ public class Conexion {
                 resultSetDep.next();
                 empleado.add(resultSetDep.getString(1));
 
+
                 out.add(empleado);
             }
             return out;
@@ -73,11 +78,4 @@ public class Conexion {
         }
         return null;
     }
-} /*
-No programa anterior, engade un método para visualizar os nomes,
- apelidos, localidade, salario, data de nacemento, nome do empregado
-  xefe e o nome do departamento onde traballan, de aqueles empregados
-   dunha determinada localidade. O método recibirá por parámetro o
-    nome da localidade. Para executar as sentenzas utilizarase a
-    interface Statement e deberanse controlar os posibles erros.
-*/
+}

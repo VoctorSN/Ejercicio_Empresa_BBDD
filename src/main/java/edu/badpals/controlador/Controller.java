@@ -16,7 +16,7 @@ public class Controller {
 
     public void displayMenu(){
         try {
-            for (List s : Conexion.leerEmpleadosPorLocalidad(c,"Vigo")){
+            for (List s : Conexion.leerEmpleadosPorLocalidad(c,"Lugo")){
                 System.out.println(s);
             }
             c.close();
