@@ -4,6 +4,7 @@ import edu.badpals.modelo.Conexion;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class Controller {
     Connection c;
@@ -15,8 +16,10 @@ public class Controller {
 
     public void displayMenu(){
         try {
-
-        c.close();
+            for (List s : Conexion.leerEmpleadosPorLocalidad(c,"Vigo")){
+                System.out.println(s);
+            }
+            c.close();
         } catch (SQLException e) {}
 
 
