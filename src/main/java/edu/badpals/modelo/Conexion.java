@@ -1,6 +1,7 @@
 package edu.badpals.modelo;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -46,6 +47,23 @@ public class Conexion {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public static boolean insertarDep(Connection c, int numero, String nombre, String nss){
+        try {
+            Statement s = c.createStatement();
+            LocalDate fecha = LocalDate.now();
+            String stringSQLDep =
+                            " INSERT INTO DEPARTAMENTOS (NUMERO, NOMBRE, NSS, FECHA) VALUES ('" + numero + "', '" + nombre + "', '" + nss + "', '" + fecha + "')";
+            boolean ejecutado = s.execute(stringSQLDep);
+            s.close();
+            return ejecutado;
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public static List<List> leerEmpleadosPorLocalidad(Connection c, String localidad){

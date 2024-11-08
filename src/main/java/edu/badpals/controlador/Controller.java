@@ -17,6 +17,7 @@ public class Controller {
     public void displayMenu(){
         try {
             Conexion.subirSalarioDepartamento(c,500,"ESTADÍSTICA");
+            Conexion.insertarDep(c,8,"NuevoDep","1100222");
             for (List s : Conexion.leerEmpleadosPorLocalidad(c,"Vigo")){
                 System.out.println(s);
             }
