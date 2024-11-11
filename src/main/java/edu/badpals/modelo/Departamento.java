@@ -14,27 +14,35 @@ public class Departamento {
         this.nss = NSSdirige;
         this.fecha = dataDireccion;
     }
+
     public int getNumero() {
         return numero;
     }
+
     public void setNumero(int numero) {
         this.numero = numero;
     }
+
     public String getNombre() {
         return nombre;
     }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+
     public String getNss() {
         return nss;
     }
+
     public void setNss(String nss) {
         this.nss = nss;
     }
+
     public Date getFecha() {
         return fecha;
     }
+
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
@@ -42,11 +50,10 @@ public class Departamento {
     @Override
     public String toString() {
         return "Departamento {" +
-            "Número: " + numero +
-            ", Nombre: '" + nombre + '\'' +
-            ", NSS: '" + nss + '\'' +
-            ", Fecha: " + fecha +
-            '}';
+                "Número: " + numero +
+                ", Nombre: '" + nombre + '\'' +
+                ", NSS: '" + nss + '\'' +
+                ", Fecha: " + fecha +
+                '}';
     }
 }
-

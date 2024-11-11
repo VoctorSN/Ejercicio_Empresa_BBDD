@@ -5,6 +5,10 @@ public class Proyecto {
     private String nombre;
     private String lugar;
     private int departamento;
+
+    public Proyecto() {
+    }
+
     public Proyecto(int numero, String nombre, String lugar, int departamento) {
         this.numero = numero;
         this.nombre = nombre;

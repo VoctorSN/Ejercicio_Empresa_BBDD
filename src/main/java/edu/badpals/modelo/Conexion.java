@@ -8,8 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Conexion {
-    public static Connection conectar(){
-       try {
+    public static Connection conectar() {
+        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection("jdbc:mysql://localhost:3306/empresa", "a23victorsn", "renaido");
         } catch (ClassNotFoundException ex) {
@@ -20,24 +20,24 @@ public class Conexion {
         return null;
     }
 
-    public static int subirSalarioDepartamento(Connection c, int subida, String nombreDep){
+    public static int subirSalarioDepartamento(Connection c, int subida, String nombreDep) {
         try {
 
             Statement statementDep = c.createStatement();
             String stringSQLDep =
-                            " SELECT NUMERO" +
+                    " SELECT NUMERO" +
                             " FROM DEPARTAMENTOS" +
                             " WHERE NOMBRE = '" + nombreDep + "'";
             ResultSet rs = statementDep.executeQuery(stringSQLDep);
-            rs.next();
+            if (!rs.next()) return 0;
 
             int numeroDep = rs.getInt(1);
 
             Statement s = c.createStatement();
             String stringSQLSalario =
                     " UPDATE EMPLEADOS" +
-                    " SET SALARIO = SALARIO + '" + subida + "'" +
-                    " WHERE DEPARTAMENTO = '" + numeroDep + "'";
+                            " SET SALARIO = SALARIO + '" + subida + "'" +
+                            " WHERE DEPARTAMENTO = '" + numeroDep + "'";
             int rowsUpdated = s.executeUpdate(stringSQLSalario);
             s.close();
             return rowsUpdated;
@@ -49,12 +49,12 @@ public class Conexion {
         return 0;
     }
 
-    public static boolean insertarDep(Connection c, int numero, String nombre, String nss){
+    public static boolean insertarDep(Connection c, int numero, String nombre, String nss) {
         try {
             Statement s = c.createStatement();
             LocalDate fecha = LocalDate.now();
             String stringSQLDep =
-                            " INSERT INTO DEPARTAMENTOS (NUMERO, NOMBRE, NSS, FECHA) VALUES ('" + numero + "', '" + nombre + "', '" + nss + "', '" + fecha + "')";
+                    " INSERT INTO DEPARTAMENTOS (NUMERO, NOMBRE, NSS, FECHA) VALUES ('" + numero + "', '" + nombre + "', '" + nss + "', '" + fecha + "')";
             boolean ejecutado = s.execute(stringSQLDep);
             s.close();
             return ejecutado;
@@ -66,19 +66,18 @@ public class Conexion {
         return false;
     }
 
-    public static List<List> leerEmpleadosPorLocalidad(Connection c, String localidad){
+    public static List<List<String>> leerEmpleadosPorLocalidad(Connection c, String localidad) {
         try {
-            List<List> out = new ArrayList<>();
+            List<List<String>> out = new ArrayList<>();
 
             Statement s = c.createStatement();
-            String stringSQLEmpleado = "" +
-                    " SELECT NOMBRE,APELLIDO1,APELLIDO2,LOCALIDAD,SALARIO,FECHA_NACIMIENTO,SUPERVISOR,DEPARTAMENTO" +
+            String stringSQLEmpleado = " SELECT NOMBRE,APELLIDO1,APELLIDO2,LOCALIDAD,SALARIO,FECHA_NACIMIENTO,SUPERVISOR,DEPARTAMENTO" +
                     " FROM EMPLEADOS " +
                     " WHERE LOCALIDAD = '" + localidad + "' ";
             ResultSet rs = s.executeQuery(stringSQLEmpleado);
 
 
-            while(rs.next()) {
+            while (rs.next()) {
                 List<String> empleado = new ArrayList<>();
 
                 empleado.add(rs.getString(1));
@@ -89,9 +88,8 @@ public class Conexion {
                 empleado.add(String.valueOf(rs.getDate(6)));
 
                 String nss = rs.getString(7);
-                if (nss != null){
-                    String stringSQLSupervisor = "" +
-                            " SELECT NOMBRE " +
+                if (nss != null) {
+                    String stringSQLSupervisor = " SELECT NOMBRE " +
                             " FROM EMPLEADOS " +
                             " WHERE NSS = '" + nss + "' ";
                     Statement statementNSS = c.createStatement();
@@ -99,13 +97,12 @@ public class Conexion {
 
                     resultSetNSS.next();
                     empleado.add(resultSetNSS.getString(1));
-                } else{
+                } else {
                     empleado.add(null);
                 }
 
                 String dep = rs.getString(8);
-                String stringSQLDepartamento = "" +
-                        " SELECT NOMBRE " +
+                String stringSQLDepartamento = " SELECT NOMBRE " +
                         " FROM DEPARTAMENTOS" +
                         " WHERE NUMERO = '" + dep + "' ";
                 Statement statementDep = c.createStatement();
@@ -125,4 +122,156 @@ public class Conexion {
         }
         return null;
     }
+
+    public static int eliminarEmpleadoProyecto(Connection c, String nss, int proyecto) {
+        try {
+            Statement s = c.createStatement();
+            String stringSQLEP = "DELETE FROM EMPLEADOS_PROYECTOS WHERE EMPLEADO = '" + nss + "' AND PROYECTO = '" + proyecto + "'";
+            return s.executeUpdate(stringSQLEP);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static int cambiarDepProy(Connection c, String dep, String proy) {
+        try {
+
+            Integer depKey = getDepByNom(c, dep);
+            if (depKey == null) return 0;
+
+            String stringSQLEP = "UPDATE PROYECTOS SET DEPARTAMENTO = ? WHERE NOMBRE = ?";
+            PreparedStatement psProy = c.prepareStatement(stringSQLEP);
+            psProy.setInt(1, depKey);
+            psProy.setString(2, proy);
+
+            return psProy.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private static Integer getDepByNom(Connection c, String dep) throws SQLException {
+        String stringSQLGetDep = "SELECT * FROM DEPARTAMENTOS WHERE NOMBRE = ?";
+        PreparedStatement psDep = c.prepareStatement(stringSQLGetDep);
+        psDep.setString(1, dep);
+        ResultSet rs = psDep.executeQuery();
+        if (!rs.next()) {
+            return null;
+        }
+        int depKey = rs.getInt(1);
+        return depKey;
+    }
+
+    public static boolean insertarProy(Connection c, Proyecto proyecto) {
+        try {
+            int numero = proyecto.getNumero();
+            String nombre = proyecto.getNombre();
+            String lugar = proyecto.getLugar();
+            int departamento = proyecto.getDepartamento();
+
+            String stringSQLProy =
+                    " INSERT INTO PROYECTOS (NUMERO, NOMBRE, LUGAR, DEPARTAMENTO)" +
+                            " VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = c.prepareStatement(stringSQLProy);
+            ps.setInt(1, numero);
+            ps.setString(2, nombre);
+            ps.setString(3, lugar);
+            ps.setInt(4, departamento);
+
+            boolean r = ps.execute();
+            ps.close();
+            return r;
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static int eliminarProy(Connection c, int proyecto) {
+        try {
+            String stringSQLProy = "DELETE FROM PROYECTOS WHERE NUMERO = ?";
+            PreparedStatement ps = c.prepareStatement(stringSQLProy);
+            ps.setInt(1, proyecto);
+
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 2;
+    }
+
+    public static List<Proyecto> getProyectosByDep(Connection c, String dep) {
+        try {
+            List<Proyecto> proyectos = new ArrayList<>();
+            int depKey = getDepByNom(c, dep);
+            String stringSQLProy = "SELECT * FROM PROYECTOS WHERE DEPARTAMENTO = ?";
+            PreparedStatement ps = c.prepareStatement(stringSQLProy);
+            ps.setInt(1, depKey);
+            ResultSet rs = ps.executeQuery();
+            Proyecto proyecto;
+            while (rs.next()) {
+                proyecto = new Proyecto(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getInt(4));
+                proyectos.add(proyecto);
+            }
+            return proyectos;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static boolean cambiarDomicilio(Connection c, String nss, String calle, int numero_calle, String piso, String CP, String localidad) {
+        try {
+            String stringSQLCall = "CALL pr_cambioDomicilio(?, ?, ?, ?, ?, ?)";
+            CallableStatement cs = c.prepareCall(stringSQLCall);
+            cs.setString(1, nss);
+            cs.setString(2, calle);
+            cs.setInt(3, numero_calle);
+            cs.setString(4, piso);
+            cs.setString(5, CP);
+            cs.setString(6, localidad);
+            return cs.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static Proyecto getProy(Connection c, int numero) {
+        try {
+            String stringSQLCall = "CALL pr_DatosProxectos(?,?,?,?)";
+            CallableStatement cs = c.prepareCall(stringSQLCall);
+            cs.setInt(1, numero);
+            cs.execute();
+            if (cs.getString(2) == null) {
+                return null;
+            }
+
+
+            Proyecto proyecto = new Proyecto();
+            proyecto.setNombre(cs.getString(2));
+            proyecto.setLugar(cs.getString(3));
+            proyecto.setDepartamento(cs.getInt(4));
+            proyecto.setNumero(numero);
+
+
+            return proyecto;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }
