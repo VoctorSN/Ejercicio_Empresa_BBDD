@@ -8,6 +8,9 @@ public class Departamento {
     private String nss;
     private Date fecha;
 
+    public Departamento() {
+    }
+
     public Departamento(int numDepartamento, String nomeDepartamento, String NSSdirige, Date dataDireccion) {
         this.numero = numDepartamento;
         this.nombre = nomeDepartamento;

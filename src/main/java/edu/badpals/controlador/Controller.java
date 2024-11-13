@@ -1,6 +1,7 @@
 package edu.badpals.controlador;
 
 import edu.badpals.modelo.Conexion;
+import edu.badpals.modelo.Departamento;
 import edu.badpals.modelo.Proyecto;
 
 import java.sql.Connection;
@@ -30,7 +31,16 @@ public class Controller {
                 System.out.println(py);
             }
             //Conexion.cambiarDomicilio(c, "9998888", "calle", 1, "piso", "cp", "localidad");
-            System.out.println(Conexion.getProy(c, 1));
+            //System.out.println(Conexion.getProy(c, 1));
+            for (Departamento departamento : Conexion.departControlaProxec(c, 3)) {
+                System.out.println(departamento);
+            }
+            System.out.println(Conexion.empDepart(c, "PERSOAL"));
+            
+            System.out.println(Conexion.insertarProyCheck(c, new Proyecto(11, "NuevoDep", "MiCasa", 3)));
+            System.out.println(Conexion.insertarProyCheck(c, new Proyecto(200, "NuevoDep", "MiCasa", 3)));
+            System.out.println(Conexion.insertarProyCheck(c, new Proyecto(11, "OtroNombre", "MiCasa", 3)));
+            System.out.println(Conexion.insertarProyCheck(c, new Proyecto(200, "OtroNombre", "MiCasa", 200)));
             c.close();
         } catch (SQLException ignored) {
         }

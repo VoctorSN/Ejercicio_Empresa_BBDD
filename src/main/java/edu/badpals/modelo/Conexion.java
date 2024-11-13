@@ -273,5 +273,101 @@ public class Conexion {
         return null;
     }
 
+    public static List<Departamento> departControlaProxec(Connection c, int numeroProy) {
+        try {
+            List<Departamento> departamentos = new ArrayList<>();
+            String stringSQLCall = "CALL pr_DepartControlaProxec(?)";
+            CallableStatement cs = c.prepareCall(stringSQLCall);
+            cs.setInt(1, numeroProy);
+            cs.execute();
+            ResultSet rs = cs.getResultSet();
+            while (rs.next()) {
+                Departamento dep = new Departamento();
+                dep.setNumero(rs.getInt("NUMERO"));
+                dep.setNombre(rs.getString("NOMBRE"));
+                dep.setNss(rs.getString("NSS"));
+                dep.setFecha(rs.getDate("FECHA"));
+                departamentos.add(dep);
+            }
+            return departamentos;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static int empDepart(Connection c, String dep) {
+        try {
+            String sentenciSQL = "SELECT fn_nEmpDepart(?)";
+            PreparedStatement ps = c.prepareStatement(sentenciSQL);
+            ps.setString(1, dep);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return -1;
+
+    }
+
+    //b) Crea un método que reciba como parámetro un obxecto proxecto
+    // e insira os seus datos na táboa proxecto. O obxecto proxecto conten
+    // os datos dun proxecto novo. A inserción do novo proxecto realizarase a
+    // través dun ResultSet dinámico, xerado mediante unha consulta a todos os
+    // datos da táboa proxectos. Para controlar os erros, tedes que implementar
+    // os seguintes métodos:
+
+    //– Método que devolva true si o número e o nome do proxecto novo existen no ResultSet e faise no caso contrario.
+
+    //– Método que devolva true si o número de departamento existe na táboa departamento e false no caso contrario.
+
+    public static int insertarProyCheck(Connection c, Proyecto py) {
+        try {
+            if (depExists(c, py.getDepartamento()) && !pyExists(c, py.getNumero(), py.getNombre())) {
+                if (Conexion.insertarProy(c, py)) {
+                    return 1;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    public static boolean pyExists(Connection c, int numero, String nombre) {
+        try {
+            String stringSQL = "SELECT NUMERO,NOMBRE FROM PROYECTOS";
+            PreparedStatement ps = c.prepareStatement(stringSQL);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                if (rs.getInt(1) == numero || rs.getString(2) == nombre) return true;
+            }
+            return false;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    public static boolean depExists(Connection c, int dep) {
+        try {
+            String stringSQL = "SELECT * FROM DEPARTAMENTOS WHERE NUMERO = ?";
+            PreparedStatement ps = c.prepareStatement(stringSQL);
+            ps.setInt(1, dep);
+            ResultSet rs = ps.executeQuery();
+            boolean res = rs.next();
+            return res;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+
+    }
+
 
 }
