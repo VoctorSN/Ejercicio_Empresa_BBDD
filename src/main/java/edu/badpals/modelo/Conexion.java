@@ -4,6 +4,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -326,9 +327,16 @@ public class Conexion {
     public static int insertarProyCheck(Connection c, Proyecto py) {
         try {
             if (depExists(c, py.getDepartamento()) && !pyExists(c, py.getNumero(), py.getNombre())) {
-                if (Conexion.insertarProy(c, py)) {
-                    return 1;
-                }
+                String stringSQL = "SELECT * FROM PROYECTOS";
+                Statement ps = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+                ResultSet rs = ps.executeQuery(stringSQL);
+                rs.moveToInsertRow();
+                rs.updateInt(1, py.getNumero());
+                rs.updateString(2, py.getNombre());
+                rs.updateString(3, py.getLugar());
+                rs.updateInt(4, py.getDepartamento());
+                rs.insertRow();
+                return 1;
             }
 
         } catch (Exception e) {
@@ -344,7 +352,7 @@ public class Conexion {
             PreparedStatement ps = c.prepareStatement(stringSQL);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                if (rs.getInt(1) == numero || rs.getString(2) == nombre) return true;
+                if (rs.getInt(1) == numero || Objects.equals(rs.getString(2), nombre)) return true;
             }
             return false;
 
@@ -361,6 +369,7 @@ public class Conexion {
             ps.setInt(1, dep);
             ResultSet rs = ps.executeQuery();
             boolean res = rs.next();
+            rs.close();
             return res;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -369,5 +378,66 @@ public class Conexion {
 
     }
 
+    public static void incrementarSalarioDep(Connection c, int salario, int numero) {
+        try {
+            String stringSQL = "SELECT * FROM EMPLEADOS WHERE DEPARTAMENTO = " + numero;
+            Statement st = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs = st.executeQuery(stringSQL);
+            while (rs.next()) {
+                float nuevoSalario = rs.getFloat("SALARIO") + salario;
+                rs.updateFloat("SALARIO", nuevoSalario);
+                rs.updateRow();
+            }
+            rs.close();
+            st.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static ResultSet getEmpleadosNumProyectos(Connection c, int numProy) {
+        try {
+            String stringSQL = "SELECT NSS, CONCAT(NOMBRE,' ',APELLIDO1,' ',APELLIDO2) AS NOMBRE_COMPLETO, LOCALIDAD, SALARIO" +
+                    " FROM EMPLEADOS " +
+                    "WHERE NSS IN (SELECT EMPLEADO " +
+                    "FROM EMPLEADOS_PROYECTOS " +
+                    "GROUP BY EMPLEADO " +
+                    "HAVING COUNT(*) > " + numProy +
+                    ")";
+            Statement s = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = s.executeQuery(stringSQL);
+            return rs;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void verFilasRS(ResultSet rs) {
+        try {
+            rs.first();
+            System.out.println(rs.getInt(1) + " " + rs.getString(2));
+            System.out.println();
+
+            rs.last();
+            System.out.println(rs.getInt(1) + " " + rs.getString(2));
+            System.out.println();
+
+            rs.previous();
+            System.out.println(rs.getInt(1) + " " + rs.getString(2));
+            System.out.println();
+
+            rs.last();
+            System.out.println(rs.getInt(1) + " " + rs.getString(2));
+            System.out.println();
+            while (rs.previous()) {
+                System.out.println(rs.getInt(1) + " " + rs.getString(2));
+                System.out.println();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

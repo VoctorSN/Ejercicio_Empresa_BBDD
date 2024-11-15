@@ -36,11 +36,13 @@ public class Controller {
                 System.out.println(departamento);
             }
             System.out.println(Conexion.empDepart(c, "PERSOAL"));
-            
-            System.out.println(Conexion.insertarProyCheck(c, new Proyecto(11, "NuevoDep", "MiCasa", 3)));
-            System.out.println(Conexion.insertarProyCheck(c, new Proyecto(200, "NuevoDep", "MiCasa", 3)));
-            System.out.println(Conexion.insertarProyCheck(c, new Proyecto(11, "OtroNombre", "MiCasa", 3)));
-            System.out.println(Conexion.insertarProyCheck(c, new Proyecto(200, "OtroNombre", "MiCasa", 200)));
+
+            //System.out.println(Conexion.insertarProyCheck(c, new Proyecto(11, "NuevoDep", "MiCasa", 3)));
+            //System.out.println(Conexion.insertarProyCheck(c, new Proyecto(200, "NuevoDep", "MiCasa", 3)));
+            //System.out.println(Conexion.insertarProyCheck(c, new Proyecto(11, "OtroNombre", "MiCasa", 3)));
+            //System.out.println(Conexion.insertarProyCheck(c, new Proyecto(200, "OtroNombre", "MiCasa", 200)));
+            // Conexion.incrementarSalarioDep(c, 100, 1);
+            Conexion.verFilasRS(Conexion.getEmpleadosNumProyectos(c, 1));
             c.close();
         } catch (SQLException ignored) {
         }
