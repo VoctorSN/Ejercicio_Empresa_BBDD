@@ -51,4 +51,88 @@ public class Prints {
     public static void getResoultSet() {
         System.out.println("INTRODUCE EL RESOULT SET");
     }
+
+    public static void getDepartamento() {
+        System.out.print("Ingrese el nombre del departamento: ");
+    }
+
+    public static void getAmount() {
+        System.out.print("Ingrese la cantidad: ");
+    }
+
+    public static void getDepId() {
+        System.out.print("Ingrese el ID del departamento: ");
+    }
+
+    public static void getDepName() {
+        System.out.print("Ingrese el nombre del departamento: ");
+    }
+
+    public static void getDepCode() {
+        System.out.print("Ingrese el código del departamento: ");
+    }
+
+    public static void getLocalidad() {
+        System.out.print("Ingrese la localidad: ");
+    }
+
+    public static void getEmpId() {
+        System.out.print("Ingrese el ID del empleado: ");
+    }
+
+    public static void getProjId() {
+        System.out.print("Ingrese el ID del proyecto: ");
+    }
+
+    public static void getOldDept() {
+        System.out.print("Ingrese el nombre del departamento antiguo: ");
+    }
+
+    public static void getNewProy() {
+        System.out.print("Ingrese el nombre del proyecto: ");
+    }
+
+    public static void getProyectoId() {
+        System.out.print("Ingrese el ID del proyecto: ");
+    }
+
+    public static void getProyectoNombre() {
+        System.out.print("Ingrese el nombre del proyecto: ");
+    }
+
+    public static void getProyectoUbicacion() {
+        System.out.print("Ingrese la ubicación del proyecto: ");
+    }
+
+    public static void getProyectoDepId() {
+        System.out.print("Ingrese el ID del departamento: ");
+    }
+
+    public static void getProjIdToDelete() {
+        System.out.print("Ingrese el ID del proyecto a eliminar: ");
+    }
+
+    public static void getCalle() {
+        System.out.print("Ingrese la calle: ");
+    }
+
+    public static void getNumero() {
+        System.out.print("Ingrese el número: ");
+    }
+
+    public static void getPiso() {
+        System.out.print("Ingrese el piso: ");
+    }
+
+    public static void getCp() {
+        System.out.print("Ingrese el código postal: ");
+    }
+
+    public static void getProjIdToGet() {
+        System.out.print("Ingrese el ID del proyecto a obtener: ");
+    }
+
+    public static void getNumProyectos() {
+        System.out.print("Ingrese el número de proyectos: ");
+    }
 }

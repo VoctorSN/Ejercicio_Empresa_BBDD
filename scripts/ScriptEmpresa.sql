@@ -57,6 +57,37 @@ ALTER TABLE DEPARTAMENTOS
     
 DELIMITER //
 
+CREATE PROCEDURE pr_cambioDomicilio(
+    IN p_nss VARCHAR(10),
+    IN p_calle VARCHAR(50),
+    IN p_numero_calle INT,
+    IN p_piso VARCHAR(10),
+    IN p_cp VARCHAR(10),
+    IN p_localidad VARCHAR(50)
+)
+BEGIN
+    UPDATE EMPLEADOS
+    SET CALLE = p_calle,
+        NUMERO_CALLE = p_numero_calle,
+        PISO = p_piso,
+        CP = p_cp,
+        LOCALIDAD = p_localidad
+    WHERE NSS = p_nss;
+END //
+
+CREATE PROCEDURE pr_DatosProxectos(
+    IN p_numero INT,
+    OUT p_nombre VARCHAR(50),
+    OUT p_lugar VARCHAR(50),
+    OUT p_departamento INT
+)
+BEGIN
+    SELECT NOMBRE, LUGAR, DEPARTAMENTO
+    INTO p_nombre, p_lugar, p_departamento
+    FROM PROYECTOS
+    WHERE NUMERO = p_numero;
+END //
+
 CREATE PROCEDURE pr_DepartControlaProxec (IN NUMEROPROY INT)
 BEGIN
     SELECT D.NUMERO, D.NOMBRE, D.NSS, D.FECHA
@@ -69,7 +100,7 @@ RETURNS INT
 DETERMINISTIC
 BEGIN
     DECLARE DEP INT;
-    SELECT NUMERO INTO DEP FROM DEPARTAMENTOS WHERE NOMBRE = NOMBRE;
+    SELECT NUMERO INTO DEP FROM DEPARTAMENTOS as d WHERE d.NOMBRE = NOMBRE;
     RETURN (SELECT COUNT(*) FROM EMPLEADOS WHERE DEPARTAMENTO = DEP);
 END //
 

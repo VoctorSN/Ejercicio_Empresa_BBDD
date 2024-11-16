@@ -8,6 +8,7 @@ import edu.badpals.modelo.Proyecto;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -36,58 +37,91 @@ public class Controller {
 
             switch (option) {
                 case 1:
-                    Conexion.subirSalarioDepartamento(c, 500, "ESTADÍSTICA");
+                    String dept1 = in.getDepartamento();
+                    int amount1 = in.getAmount();
+                    Conexion.subirSalarioDepartamento(c, amount1, dept1);
                     break;
                 case 2:
-                    Conexion.insertarDep(c, 8, "NuevoDep", "1100222");
+                    int depId = in.getDepId();
+                    String depName = in.getDepName();
+                    String depCode = in.getDepCode();
+                    Conexion.insertarDep(c, depId, depName, depCode);
                     break;
                 case 3:
-                    for (List<String> s : Conexion.leerEmpleadosPorLocalidad(c, "Vigo")) {
+                    String localidad = in.getLocalidad();
+                    for (List<String> s : Conexion.leerEmpleadosPorLocalidad(c, localidad)) {
                         System.out.println(s);
                     }
                     break;
                 case 4:
-                    Conexion.eliminarEmpleadoProyecto(c, "0010010", 8);
+                    String empId = in.getEmpId();
+                    int projId = in.getProjId();
+                    Conexion.eliminarEmpleadoProyecto(c, empId, projId);
                     break;
                 case 5:
-                    Conexion.cambiarDepProy(c, "TÉCNICO", "XESTION DE PERSOAL");
+                    String oldDept = in.getOldDept();
+                    String newDept = in.getNewProy();
+                    Conexion.cambiarDepProy(c, oldDept, newDept);
                     break;
                 case 6:
-                    Conexion.insertarProy(c, new Proyecto(11, "NuevoDep", "MiCasa", 3));
+                    Proyecto proyecto = in.getProyecto();
+                    Conexion.insertarProy(c, proyecto);
                     break;
                 case 7:
-                    Conexion.eliminarProy(c, 11);
+                    int projIdToDelete = in.getProjIdToDelete();
+                    Conexion.eliminarProy(c, projIdToDelete);
                     break;
                 case 8:
-                    for (Proyecto py : Conexion.getProyectosByDep(c, "TÉCNICO")) {
+                    String dept2 = in.getDepartamento();
+                    for (Proyecto py : Conexion.getProyectosByDep(c, dept2)) {
                         System.out.println(py);
                     }
                     break;
                 case 9:
-                    Conexion.cambiarDomicilio(c, "9998888", "calle", 1, "piso", "cp", "localidad");
+                    String empId2 = in.getEmpId();
+                    String calle = in.getCalle();
+                    int numero = in.getNumero();
+                    String piso = in.getPiso();
+                    String cp = in.getCp();
+                    String localidad2 = in.getLocalidad();
+                    Conexion.cambiarDomicilio(c, empId2, calle, numero, piso, cp, localidad2);
                     break;
                 case 10:
-                    System.out.println(Conexion.getProy(c, 1));
+                    int projIdToGet = in.getProjIdToGet();
+                    proyecto = Conexion.getProy(c, projIdToGet);
+                    if (proyecto == null) {
+                        System.out.println("No existe el proyecto");
+                    } else {
+                        System.out.println(proyecto);
+                    }
                     break;
                 case 11:
-                    for (Departamento departamento : Conexion.departControlaProxec(c, 3)) {
+                    int projId3 = in.getProjId();
+                    for (Departamento departamento : Conexion.departControlaProxec(c, projId3)) {
                         System.out.println(departamento);
                     }
                     break;
                 case 12:
-                    System.out.println(Conexion.empDepart(c, "PERSOAL"));
+                    String dept3 = in.getDepartamento();
+                    System.out.println(Conexion.empDepart(c, dept3));
                     break;
                 case 13:
-                    System.out.println(Conexion.insertarProyCheck(c, new Proyecto(11, "NuevoDep", "MiCasa", 3)));
-                    System.out.println(Conexion.insertarProyCheck(c, new Proyecto(200, "NuevoDep", "MiCasa", 3)));
-                    System.out.println(Conexion.insertarProyCheck(c, new Proyecto(11, "OtroNombre", "MiCasa", 3)));
-                    System.out.println(Conexion.insertarProyCheck(c, new Proyecto(200, "OtroNombre", "MiCasa", 200)));
+                    Proyecto proyectoCheck = in.getProyecto();
+                    Conexion.insertarProyCheck(c, proyectoCheck);
                     break;
                 case 14:
-                    Conexion.incrementarSalarioDep(c, 100, 1);
+                    int amount2 = in.getAmount();
+                    int depId2 = in.getDepId();
+                    Conexion.incrementarSalarioDep(c, amount2, depId2);
                     break;
                 case 15:
-                    Conexion.verFilasRS(Conexion.getEmpleadosNumProyectos(c, 1));
+                    int numProyectos = in.getNumProyectos();
+                    ResultSet rs = Conexion.getEmpleadosNumProyectos(c, numProyectos);
+                    if (rs != null) {
+                        Conexion.verFilasRS(rs);
+                    } else {
+                        System.out.println("Ocurrio un error en getEmpleadosNumProyectos");
+                    }
                     break;
                 case 16:
                     displayMetadataMenu();

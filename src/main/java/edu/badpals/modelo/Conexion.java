@@ -52,6 +52,7 @@ public class Conexion {
 
     public static boolean insertarDep(Connection c, int numero, String nombre, String nss) {
         try {
+            if (Conexion.depExists(c, numero)) return false;
             Statement s = c.createStatement();
             LocalDate fecha = LocalDate.now();
             String stringSQLDep =
@@ -68,8 +69,8 @@ public class Conexion {
     }
 
     public static List<List<String>> leerEmpleadosPorLocalidad(Connection c, String localidad) {
+        List<List<String>> out = new ArrayList<>();
         try {
-            List<List<String>> out = new ArrayList<>();
 
             Statement s = c.createStatement();
             String stringSQLEmpleado = " SELECT NOMBRE,APELLIDO1,APELLIDO2,LOCALIDAD,SALARIO,FECHA_NACIMIENTO,SUPERVISOR,DEPARTAMENTO" +
@@ -115,13 +116,12 @@ public class Conexion {
 
                 out.add(empleado);
             }
-            return out;
 
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return out;
     }
 
     public static int eliminarEmpleadoProyecto(Connection c, String nss, int proyecto) {
@@ -169,6 +169,7 @@ public class Conexion {
 
     public static boolean insertarProy(Connection c, Proyecto proyecto) {
         try {
+            if (Conexion.pyExists(c, proyecto.getNumero(), proyecto.getNombre())) return false;
             int numero = proyecto.getNumero();
             String nombre = proyecto.getNombre();
             String lugar = proyecto.getLugar();
@@ -208,9 +209,10 @@ public class Conexion {
     }
 
     public static List<Proyecto> getProyectosByDep(Connection c, String dep) {
+        List<Proyecto> proyectos = new ArrayList<>();
         try {
-            List<Proyecto> proyectos = new ArrayList<>();
-            int depKey = getDepByNom(c, dep);
+            Integer depKey = getDepByNom(c, dep);
+            if (depKey == null) return proyectos;
             String stringSQLProy = "SELECT * FROM PROYECTOS WHERE DEPARTAMENTO = ?";
             PreparedStatement ps = c.prepareStatement(stringSQLProy);
             ps.setInt(1, depKey);
@@ -224,12 +226,11 @@ public class Conexion {
                         rs.getInt(4));
                 proyectos.add(proyecto);
             }
-            return proyectos;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return proyectos;
     }
 
     public static boolean cambiarDomicilio(Connection c, String nss, String calle, int numero_calle, String piso, String CP, String localidad) {
@@ -275,8 +276,8 @@ public class Conexion {
     }
 
     public static List<Departamento> departControlaProxec(Connection c, int numeroProy) {
+        List<Departamento> departamentos = new ArrayList<>();
         try {
-            List<Departamento> departamentos = new ArrayList<>();
             String stringSQLCall = "CALL pr_DepartControlaProxec(?)";
             CallableStatement cs = c.prepareCall(stringSQLCall);
             cs.setInt(1, numeroProy);
@@ -290,11 +291,10 @@ public class Conexion {
                 dep.setFecha(rs.getDate("FECHA"));
                 departamentos.add(dep);
             }
-            return departamentos;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return departamentos;
     }
 
     public static int empDepart(Connection c, String dep) {
@@ -413,14 +413,22 @@ public class Conexion {
             System.out.println(rs.getInt(1) + " " + rs.getString(2));
             System.out.println();
 
-            rs.previous();
-            System.out.println(rs.getInt(1) + " " + rs.getString(2));
-            System.out.println();
+            if (rs.previous()) {
+                System.out.println(rs.getInt(1) + " " + rs.getString(2));
+                System.out.println();
 
-            rs.last();
-            System.out.println(rs.getInt(1) + " " + rs.getString(2));
-            System.out.println();
-            while (rs.previous()) {
+                rs.last();
+                System.out.println(rs.getInt(1) + " " + rs.getString(2));
+                System.out.println();
+                while (rs.previous()) {
+                    System.out.println(rs.getInt(1) + " " + rs.getString(2));
+                    System.out.println();
+                }
+            } else {
+                rs.next();
+                System.out.println(rs.getInt(1) + " " + rs.getString(2));
+                System.out.println();
+
                 System.out.println(rs.getInt(1) + " " + rs.getString(2));
                 System.out.println();
             }
