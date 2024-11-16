@@ -1,5 +1,6 @@
 package edu.badpals.controlador;
 
+import edu.badpals.Vista.Inputs;
 import edu.badpals.modelo.Conexion;
 import edu.badpals.modelo.ConexionMetadata;
 import edu.badpals.modelo.Departamento;
@@ -15,38 +16,23 @@ public class Controller {
     Connection c;
     DatabaseMetaData md;
     Scanner scanner;
+    Inputs in;
+    String esquema;
+    String tabla;
+    String rs;
 
     public Controller() {
         c = Conexion.conectar();
         md = ConexionMetadata.getMetadata(c);
         scanner = new Scanner(System.in);
+        in = new Inputs();
     }
 
 
     public void displayMenu() {
 
         while (true) {
-            System.out.println("======= MENU =======");
-            System.out.println("1. Subir salario por departamento");
-            System.out.println("2. Insertar departamento");
-            System.out.println("3. Leer empleados por localidad");
-            System.out.println("4. Eliminar empleado de proyecto");
-            System.out.println("5. Cambiar departamento de proyecto");
-            System.out.println("6. Insertar proyecto");
-            System.out.println("7. Eliminar proyecto");
-            System.out.println("8. Obtener proyectos por departamento");
-            System.out.println("9. Cambiar domicilio");
-            System.out.println("10. Obtener proyecto por ID");
-            System.out.println("11. Departamentos que controlan proyectos");
-            System.out.println("12. Empleados por departamento");
-            System.out.println("13. Insertar proyecto con verificación");
-            System.out.println("14. Incrementar salario por departamento");
-            System.out.println("15. Ver filas de empleados por número de proyectos");
-            System.out.println("16. Menu de metadatos");
-            System.out.println("0. Salir");
-            System.out.print("Seleccione una opción: ");
-            int option = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            int option = in.getOptionMenu();
 
             switch (option) {
                 case 1:
@@ -109,7 +95,8 @@ public class Controller {
                 case 0:
                     try {
                         c.close();
-                    } catch (SQLException ignored) {}
+                    } catch (SQLException ignored) {
+                    }
                     return;
                 default:
                     System.out.println("Opción no válida.");
@@ -117,24 +104,10 @@ public class Controller {
         }
     }
 
+
     public void displayMetadataMenu() {
         while (true) {
-            System.out.println("======= MENU DE METADATOS =======");
-            System.out.println("1. Mostrar información");
-            System.out.println("2. Mostrar tablas de usuario");
-            System.out.println("3. Mostrar columnas de tabla");
-            System.out.println("4. Mostrar procedimientos");
-            System.out.println("5. Mostrar clave primaria");
-            System.out.println("6. Mostrar clave foránea");
-            System.out.println("7. Mostrar información adicional");
-            System.out.println("8. Mostrar límites del conector");
-            System.out.println("9. Mostrar información de transacciones");
-            System.out.println("10. Mostrar soporte de características");
-            System.out.println("11. Mostrar metadatos de ResultSet");
-            System.out.println("0. Volver al menú principal");
-            System.out.print("Seleccione una opción: ");
-            int option = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            int option = in.getOptionMenuMetadatos();
 
             switch (option) {
                 case 1:
@@ -144,16 +117,22 @@ public class Controller {
                     ConexionMetadata.mostrarTablasUsuario(md);
                     break;
                 case 3:
-                    ConexionMetadata.mostrarColumnasTabla(md, "empresa", "departamentos");
+                    esquema = in.getEsquema();
+                    tabla = in.getTabla();
+                    ConexionMetadata.mostrarColumnasTabla(md, esquema, tabla);
                     break;
                 case 4:
                     ConexionMetadata.mostrarProcedimientos(md);
                     break;
                 case 5:
-                    ConexionMetadata.mostrarClavePrimaria(md, "empresa", "empleados");
+                    esquema = in.getEsquema();
+                    tabla = in.getTabla();
+                    ConexionMetadata.mostrarClavePrimaria(md, esquema, tabla);
                     break;
                 case 6:
-                    ConexionMetadata.mostrarClaveForanea(md, "empresa", "departamentos");
+                    esquema = in.getEsquema();
+                    tabla = in.getTabla();
+                    ConexionMetadata.mostrarClaveForanea(md, esquema, tabla);
                     break;
                 case 7:
                     ConexionMetadata.mostrarInformacionAdicional(md);
@@ -168,7 +147,8 @@ public class Controller {
                     ConexionMetadata.mostrarSoporteCaracteristicas(md);
                     break;
                 case 11:
-                    ConexionMetadata.mostrarMetadataResultSet(c, "SELECT * FROM PROYECTOS");
+                    rs = in.getResoultSet();
+                    ConexionMetadata.mostrarMetadataResultSet(c, rs);
                     break;
                 case 0:
                     return;
@@ -177,5 +157,6 @@ public class Controller {
             }
         }
     }
+
 
 }
