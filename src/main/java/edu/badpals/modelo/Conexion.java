@@ -12,7 +12,7 @@ public class Conexion {
     public static Connection conectar() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection("jdbc:mysql://localhost:3306/empresa", "a23victorsn", "renaido");
+            return DriverManager.getConnection("jdbc:mysql://localhost:3306/empresa", "root", "root");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
@@ -312,17 +312,6 @@ public class Conexion {
         return -1;
 
     }
-
-    //b) Crea un método que reciba como parámetro un obxecto proxecto
-    // e insira os seus datos na táboa proxecto. O obxecto proxecto conten
-    // os datos dun proxecto novo. A inserción do novo proxecto realizarase a
-    // través dun ResultSet dinámico, xerado mediante unha consulta a todos os
-    // datos da táboa proxectos. Para controlar os erros, tedes que implementar
-    // os seguintes métodos:
-
-    //– Método que devolva true si o número e o nome do proxecto novo existen no ResultSet e faise no caso contrario.
-
-    //– Método que devolva true si o número de departamento existe na táboa departamento e false no caso contrario.
 
     public static int insertarProyCheck(Connection c, Proyecto py) {
         try {
